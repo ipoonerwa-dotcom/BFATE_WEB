@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 字体源文件（马善政 5.8MB、思源宋体 11.6MB，按 README 重新下载）；裁好的子集在 public/fonts
+fonts-src/*.ttf
+fonts-src/*.otf

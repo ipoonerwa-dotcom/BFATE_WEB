@@ -1,26 +1,892 @@
 @import "tailwindcss";
+/* 字体子集（马善政楷书 + 思源宋体，均为 SIL OFL 1.1），由 scripts/subset-font.py 生成。 */
+@import "./fonts.css";
+
+@theme {
+  --color-paper: #f4eee0;
+  --color-paper-2: #ebe2cf;
+  --color-paper-3: #dfd2b8;
+  --color-ink: #1b1714;
+  --color-ink-2: #3f3831;
+  --color-ink-3: #7a6f62;
+  --color-ink-4: #ada290;
+  --color-cinnabar: #b02d24;
+  --color-cinnabar-2: #c9412f;
+  --color-cinnabar-deep: #861d16;
+  --color-cinnabar-soft: #f1dccf;
+  --color-gold: #a98544;
+  --color-gold-2: #d2b06a;
+  --color-gold-deep: #7d5f27;
+  --color-gold-soft: #efe3c6;
+  --color-jade: #3d6b5c;
+  --color-jade-soft: #d9e5dd;
+  --color-dai: #2f4a55;
+  --color-ochre: #9a6b3f;
+  --font-brush: "BfateBrush", "STKaiti", "KaiTi", "Kaiti SC", serif;
+  --font-serif: "BfateSerif", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --font-sans: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei", system-ui, sans-serif;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --paper-tex: url("/art/paper.webp");
+  /* 回纹角花（泥金）：四个角各一张，叠在卡片内框的转角上。 */
+  --corner-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' stroke='%23a98544'%3E%3Cpath d='M.75 24V.75H24' stroke-width='1.5'/%3E%3Cpath d='M5.5 16V5.5H16v6h-5.5V9' stroke-width='1.2'/%3E%3C/svg%3E");
+  --corner-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' stroke='%23a98544'%3E%3Cg transform='matrix(-1 0 0 1 30 0)'%3E%3Cpath d='M.75 24V.75H24' stroke-width='1.5'/%3E%3Cpath d='M5.5 16V5.5H16v6h-5.5V9' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E");
+  --corner-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' stroke='%23a98544'%3E%3Cg transform='matrix(1 0 0 -1 0 30)'%3E%3Cpath d='M.75 24V.75H24' stroke-width='1.5'/%3E%3Cpath d='M5.5 16V5.5H16v6h-5.5V9' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E");
+  --corner-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' stroke='%23a98544'%3E%3Cg transform='matrix(-1 0 0 -1 30 30)'%3E%3Cpath d='M.75 24V.75H24' stroke-width='1.5'/%3E%3Cpath d='M5.5 16V5.5H16v6h-5.5V9' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  background-image: var(--paper-tex);
+  background-size: 512px 512px;
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-feature-settings: "lnum" 1;
+  min-height: 100dvh;
+}
+/* 旧纸的四周略深：一层固定的暗角。 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(130% 95% at 50% 40%, transparent 58%, rgba(122, 92, 48, 0.13) 100%);
+}
+
+::selection {
+  background: var(--color-cinnabar-soft);
+}
+
+.font-mono-addr {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0;
+}
+
+/* 竖排签诗。 */
+.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+/* 毛笔字的墨色：干笔飞白与纸纹（遮罩），让字像写在纸上而不是印上去的。 */
+.ink-text {
+  -webkit-mask-image: url("/art/ink-grain.webp");
+  mask-image: url("/art/ink-grain.webp");
+  -webkit-mask-size: 260px 260px;
+  mask-size: 260px 260px;
+}
+
+/* ── 卡片：宣纸底 + 泥金细框 + 回纹角花 ─────────────────── */
+.panel {
+  position: relative;
+  border: 1px solid rgba(169, 133, 68, 0.42);
+  border-radius: 3px;
+  background:
+    var(--corner-tl) top 5.25px left 5.25px / 30px 30px no-repeat,
+    var(--corner-tr) top 5.25px right 5.25px / 30px 30px no-repeat,
+    var(--corner-bl) bottom 5.25px left 5.25px / 30px 30px no-repeat,
+    var(--corner-br) bottom 5.25px right 5.25px / 30px 30px no-repeat,
+    linear-gradient(rgba(255, 252, 243, 0.62), rgba(255, 252, 243, 0.62)),
+    var(--paper-tex) 0 0 / 512px 512px,
+    var(--color-paper);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 20px 40px -30px rgba(70, 48, 20, 0.55),
+    0 3px 10px -6px rgba(70, 48, 20, 0.2);
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(169, 133, 68, 0.24);
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* 卡片里的小格子。 */
+.cell {
+  border: 1px solid rgba(63, 56, 49, 0.12);
+  border-radius: 3px;
+  background: rgba(255, 252, 243, 0.55);
+}
+
+/* 卡片标题：毛笔字 + 右侧一道泥金细线。 */
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-brush);
+  font-size: clamp(1.15rem, 5.4vw, 1.375rem);
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+}
+.panel-title::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: none;
+  background: var(--color-cinnabar);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 2px rgba(176, 45, 36, 0.15);
+}
+.panel-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  min-width: 1rem;
+  background: linear-gradient(90deg, rgba(169, 133, 68, 0.55), rgba(169, 133, 68, 0));
+}
+
+/* ── 按钮 ─────────────────────────────────────────── */
+.btn-seal {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 50px;
+  padding: 0 1.6rem;
+  overflow: hidden;
+  color: #fdf3e2;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #c43d2e 0%, #a6281f 52%, #8e1f18 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 214, 170, 0.35),
+    inset 0 -2px 0 rgba(60, 8, 4, 0.25),
+    0 10px 22px -12px rgba(142, 31, 24, 0.85);
+  font-family: var(--font-brush);
+  font-size: 1.3rem;
+  letter-spacing: 0.16em;
+  text-shadow: 0 1px 0 rgba(80, 10, 6, 0.35);
+  transition:
+    transform 0.15s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+}
+/* 内圈泥金细框 */
+.btn-seal::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(240, 204, 140, 0.55);
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* 掠过的一道金光 */
+.btn-seal::after {
+  content: "";
+  position: absolute;
+  inset: -40% auto -40% -60%;
+  width: 40%;
+  z-index: -1;
+  background: linear-gradient(100deg, transparent, rgba(255, 226, 170, 0.35), transparent);
+  transform: skewX(-18deg) translateX(0);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+.btn-seal:hover::after {
+  transform: skewX(-18deg) translateX(420%);
+}
+.btn-seal:hover {
+  filter: brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 214, 170, 0.35),
+    inset 0 -2px 0 rgba(60, 8, 4, 0.25),
+    0 14px 26px -12px rgba(142, 31, 24, 0.9);
+}
+.btn-seal:active {
+  transform: translateY(1px) scale(0.99);
+}
+.btn-seal:disabled {
+  filter: grayscale(0.55);
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-ink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 50px;
+  padding: 0 1.5rem;
+  color: var(--color-ink);
+  border: 1px solid rgba(27, 23, 20, 0.6);
+  border-radius: 3px;
+  background: rgba(255, 252, 243, 0.55);
+  backdrop-filter: blur(2px);
+  font-family: var(--font-brush);
+  font-size: 1.25rem;
+  letter-spacing: 0.14em;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.btn-ink::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(27, 23, 20, 0.16);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.btn-ink:hover {
+  background: rgba(27, 23, 20, 0.05);
+}
+
+/* ── 表单 ─────────────────────────────────────────── */
+.field {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(63, 56, 49, 0.24);
+  border-radius: 3px;
+  background: rgba(255, 252, 243, 0.75);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  appearance: none;
+}
+.field:focus {
+  border-color: rgba(176, 45, 36, 0.6);
+  background: #fffcf4;
+  box-shadow: 0 0 0 3px rgba(176, 45, 36, 0.1);
+}
+select.field {
+  padding-right: 2.2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%237a6f62' stroke-width='1.4'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+}
+.field-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-3);
+}
+/* 二选一：选中时像盖了一枚朱印 */
+.choice {
+  position: relative;
+  min-height: 48px;
+  border: 1px solid rgba(63, 56, 49, 0.22);
+  border-radius: 3px;
+  background: rgba(255, 252, 243, 0.7);
+  color: var(--color-ink-2);
+  font-family: var(--font-brush);
+  font-size: 1.3rem;
+  transition: all 0.2s ease;
+}
+.choice[aria-pressed="true"] {
+  border-color: #8e1f18;
+  color: #fdf3e2;
+  background: linear-gradient(180deg, #c43d2e, #9a231b);
+  box-shadow: 0 8px 18px -12px rgba(142, 31, 24, 0.9);
+}
+.choice[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(240, 204, 140, 0.5);
+  border-radius: 2px;
+}
+
+/* ── 签文立轴 ──────────────────────────────────────── */
+.qian-scroll {
+  position: relative;
+  width: 268px;
+  margin: 0 auto;
+  filter: drop-shadow(0 18px 22px rgba(60, 38, 16, 0.28));
+}
+.qian-cord {
+  display: block;
+  width: 150px;
+  height: 30px;
+  margin: 0 auto -3px;
+}
+.qian-rod {
+  position: relative;
+  height: 9px;
+  margin: 0 -4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #7a5236 0%, #4a2f1d 55%, #2e1c10 100%);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+.qian-mount {
+  position: relative;
+  height: 470px;
+  padding: 30px 15px 20px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-45deg, rgba(50, 64, 56, 0.06) 0 1px, transparent 1px 7px),
+    linear-gradient(180deg, #dde1d4 0%, #d0d6c7 100%);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.4),
+    inset -1px 0 0 rgba(0, 0, 0, 0.08);
+}
+.qian-heart {
+  position: relative;
+  height: 100%;
+  padding: 16px 14px;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(140, 98, 46, 0.2) 100%),
+    linear-gradient(rgba(244, 233, 207, 0.72), rgba(244, 233, 207, 0.72)),
+    var(--paper-tex) 0 0 / 360px 360px,
+    #f1e6cb;
+  box-shadow:
+    0 0 0 1px rgba(90, 70, 40, 0.35),
+    0 0 0 4px #c4af80,
+    0 0 0 5px rgba(90, 70, 40, 0.3);
+}
+.qian-head {
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(176, 45, 36, 0.35);
+}
+.qian-poem {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  height: 252px;
+  margin-top: 16px;
+  font-size: 25px;
+  line-height: 1.12;
+  letter-spacing: 0.14em;
+  color: var(--color-ink);
+}
+.qian-poem span {
+  padding: 4px 7px 0;
+  border-left: 1px solid rgba(176, 45, 36, 0.42);
+}
+.qian-poem span:first-child {
+  border-right: 1px solid rgba(176, 45, 36, 0.42);
+}
+.qian-foot {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.qian-seal-top {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.qian-roller {
+  position: relative;
+  height: 16px;
+  margin: 0 -10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #6e4a30 0%, #3c2414 50%, #24150b 100%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+.qian-roller::before,
+.qian-roller::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  width: 13px;
+  height: 22px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #8a6a2c, #e7c983 45%, #9c7a36);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.qian-roller::before {
+  left: -9px;
+}
+.qian-roller::after {
+  right: -9px;
+}
+.is-unrolling .qian-mount {
+  animation: scroll-unroll 1.35s cubic-bezier(0.25, 0.7, 0.2, 1) 0.15s both;
+}
+.is-unrolling .qian-roller {
+  animation: roller-down 1.35s cubic-bezier(0.25, 0.7, 0.2, 1) 0.15s both;
+}
+.is-unrolling .qian-seal,
+.is-unrolling .qian-seal-top {
+  animation: stamp 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) 1.5s both;
+}
+.is-unrolling .qian-seal-top {
+  animation-delay: 1.75s;
+}
+@keyframes scroll-unroll {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes roller-down {
+  from {
+    transform: translateY(-470px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* ── 首屏山水 ──────────────────────────────────────── */
+.hero {
+  --mx: 0;
+  --my: 0;
+}
+.hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+}
+.hero-layer img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+  transform-origin: 50% 100%;
+  transform: translate3d(calc(var(--mx) * var(--d) * -22px), calc(var(--my) * var(--d) * -9px), 0) scale(1.045);
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+/* 图解码完再淡入，不会「啪」地一下冒出来 */
+.hero-layer img[data-loaded] {
+  opacity: 1;
+}
+.hero-sun {
+  position: absolute;
+  right: 7%;
+  top: 2.5%;
+  width: 72px;
+  aspect-ratio: 1;
+  transform: translate3d(calc(var(--mx) * -5px), calc(var(--my) * -3px), 0);
+}
+.hero-sun img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.hero-sun::before {
+  content: "";
+  position: absolute;
+  inset: -55%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 92, 60, 0.28) 0%, rgba(214, 92, 60, 0.1) 35%, transparent 65%);
+  animation: sun-glow 7s ease-in-out infinite alternate;
+}
+@media (min-aspect-ratio: 1/1) {
+  .hero-sun {
+    right: 16%;
+    top: 11%;
+    width: clamp(120px, 10.5vw, 210px);
+  }
+}
+.hero-mist {
+  position: absolute;
+  left: 0;
+  width: calc(100% + 1600px);
+  height: 340px;
+  background-image: url("/art/mist.webp");
+  background-image: image-set(url("/art/mist.avif") type("image/avif"), url("/art/mist.webp") type("image/webp"));
+  background-size: 1600px 100%;
+  background-repeat: repeat-x;
+  animation: mist-flow 120s linear infinite;
+  will-change: transform;
+}
+.hero-mist.a {
+  top: 63%;
+  opacity: 0.7;
+}
+.hero-mist.b {
+  top: 74%;
+  height: 300px;
+  opacity: 0.8;
+  animation-duration: 80s;
+  animation-direction: reverse;
+}
+@media (min-aspect-ratio: 1/1) {
+  .hero-mist.a {
+    top: 58%;
+  }
+  .hero-mist.b {
+    top: 70%;
+  }
+}
+.hero-cranes {
+  position: absolute;
+  inset: 0;
+}
+.crane-track {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  animation: crane-cross linear infinite;
+  will-change: transform;
+}
+/* 手机上鹤飞得高一些，不从标题上穿过 */
+.crane-track.c1 {
+  top: 4%;
+}
+.crane-track.c2 {
+  top: 8%;
+}
+.crane-track.c3 {
+  top: 77%;
+}
+@media (min-aspect-ratio: 1/1) {
+  .crane-track.c1 {
+    top: 15%;
+  }
+  .crane-track.c2 {
+    top: 21%;
+  }
+  .crane-track.c3 {
+    top: 30%;
+  }
+}
+.crane-bob {
+  animation: crane-bob 5.5s ease-in-out infinite alternate;
+}
+.crane-wing {
+  transform-box: view-box;
+  transform-origin: 86px 37px;
+  animation: wing-flap 1.05s ease-in-out infinite alternate;
+}
+.crane-wing.far {
+  animation-delay: -0.12s;
+}
+.hero-boat {
+  position: absolute;
+  left: 58%;
+  bottom: 17%;
+  width: 80px;
+  transform: translate3d(calc(var(--mx) * -14px), 0, 0);
+}
+@media (min-aspect-ratio: 1/1) {
+  .hero-boat {
+    left: 33%;
+    bottom: 13%;
+    width: 128px;
+  }
+}
+.boat-bob {
+  animation: boat-bob 4.8s ease-in-out infinite alternate;
+  transform-origin: 50% 80%;
+}
+.ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ripple 4.8s ease-out infinite;
+}
+.gold-dust i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #e2c27e;
+  box-shadow: 0 0 6px 1px rgba(226, 194, 126, 0.6);
+  opacity: 0;
+  animation: dust-rise linear infinite;
+}
+
+/* 标题逐字「写」出来：自上而下显形，略带墨晕。 */
+.hero-title span {
+  display: inline-block;
+  animation: char-write 1s cubic-bezier(0.3, 0.6, 0.2, 1) both;
+}
+.hero-in {
+  animation: ink-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* 下滑提示 */
+.scroll-cue {
+  position: relative;
+  width: 1px;
+  height: 42px;
+  background: linear-gradient(rgba(27, 23, 20, 0), rgba(27, 23, 20, 0.35));
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-cinnabar);
+  animation: cue-drop 2.2s ease-in-out infinite;
+}
+
+/* ── 动画 ─────────────────────────────────────────── */
+@keyframes mist-flow {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-1600px, 0, 0);
+  }
+}
+@keyframes sun-glow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+@keyframes crane-cross {
+  from {
+    transform: translate3d(105%, 0, 0);
+  }
+  to {
+    transform: translate3d(-12%, 0, 0);
+  }
+}
+@keyframes crane-bob {
+  from {
+    transform: translateY(-10px) rotate(-2deg);
+  }
+  to {
+    transform: translateY(12px) rotate(3deg);
+  }
+}
+@keyframes wing-flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(-0.62);
+  }
+}
+@keyframes boat-bob {
+  from {
+    transform: translateY(-1.5px) rotate(-1.2deg);
+  }
+  to {
+    transform: translateY(1.5px) rotate(1.2deg);
+  }
+}
+@keyframes ripple {
+  0% {
+    transform: scaleX(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scaleX(1.6);
+    opacity: 0;
+  }
+}
+@keyframes dust-rise {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(18px, -140px, 0);
+    opacity: 0;
+  }
+}
+@keyframes char-write {
+  from {
+    opacity: 0.2;
+    clip-path: inset(0 0 100% 0);
+    filter: blur(3px);
+    transform: translateY(-4px) scale(1.04);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0.4px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 -10% 0);
+    filter: blur(0);
+    transform: none;
+  }
+}
+@keyframes cue-drop {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(38px);
+    opacity: 0;
+  }
+}
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes ink-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.7) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.93) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+}
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes qt-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-7deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+.qt-shake {
+  animation: qt-shake 0.32s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+@keyframes grow-up {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes knot-in {
+  0%,
+  55% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4) rotate(-20deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.12) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) rotate(0);
+  }
+}
+.anim-knot {
+  animation:
+    knot-in 1.8s cubic-bezier(0.3, 1.2, 0.5, 1) both,
+    knot-beat 1.6s ease-in-out 1.8s infinite;
+}
+@keyframes knot-beat {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+@keyframes bar-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes dial-in {
+  from {
+    stroke-dasharray: 0 999;
+  }
+}
+
+.anim-ink-in {
+  animation: ink-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.anim-stamp {
+  animation: stamp 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.anim-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+/* 滚动视差：支持滚动驱动动画的浏览器里，近山比远山走得快。 */
+@supports (animation-timeline: scroll()) {
+  .hero-layer img {
+    animation: hero-scroll linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 100vh;
+  }
+  @keyframes hero-scroll {
+    to {
+      translate: 0 calc((1 - var(--d)) * 130px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
