@@ -2,7 +2,7 @@ import Link from "next/link";
 import { HeroScene } from "@/components/hero/HeroScene";
 import { IconKline, IconKnot, IconQian } from "@/components/ink/Icons";
 import { Seal } from "@/components/ink/Seal";
-import { XLink } from "@/components/site/XLink";
+import { TokenBar } from "@/components/site/TokenBar";
 import { almanacFor, todayYmd } from "@/lib/fate/bazi";
 import { cnNumber } from "@/lib/client/format";
 import { publicConfig } from "@/lib/config";
@@ -90,8 +90,8 @@ export default function Home() {
                 测姻缘
               </Link>
             </div>
-            <div className="hero-in mt-5 text-[13px] tracking-wider" style={{ animationDelay: "1.85s" }}>
-              <XLink />
+            <div className="hero-in mt-5 w-full max-w-[34rem]" style={{ animationDelay: "1.85s" }}>
+              <TokenBar />
             </div>
           </div>
           <div className="hero-in mt-auto flex flex-col items-center gap-2 pb-24 pt-10 text-[12px] tracking-[0.3em] text-ink-3 md:pb-10" style={{ animationDelay: "2.2s" }}>
