@@ -21,7 +21,15 @@ export function SiteFooter() {
           </p>
           {publicConfig.token ? (
             <p className="break-all">
-              ${publicConfig.tokenSymbol} 合约：<span className="font-mono-addr">{publicConfig.token}</span>
+              ${publicConfig.tokenSymbol} 合约：
+              <a
+                href={`https://bscscan.com/token/${publicConfig.token}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono-addr text-ink-2 underline decoration-gold/50 underline-offset-4 hover:text-cinnabar"
+              >
+                {publicConfig.token}
+              </a>
             </p>
           ) : null}
           <p>命理推演基于传统黄历与八字规则，仅供娱乐参考，不构成任何投资或人生决策建议。</p>

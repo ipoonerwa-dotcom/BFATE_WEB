@@ -7,12 +7,14 @@ const addr = (v: string | undefined, d: `0x${string}`): `0x${string}` => (v && i
 export const DEAD = "0x000000000000000000000000000000000000dEaD" as const;
 
 const xUrl = process.env.NEXT_PUBLIC_X_URL || "https://x.com/BinanceFATE";
+/** $BFATE 主网合约（2026-10-09 发射，Flap 税币 + 官方分账金库）；可用环境变量覆盖。 */
+const tokenAddr = process.env.NEXT_PUBLIC_BFATE_TOKEN || "0xce628b25d817fa0dbf0e3321d1574ebee2957777";
 
 export const publicConfig = {
   siteName: process.env.NEXT_PUBLIC_SITE_NAME || "BFATE",
   chainId: num(process.env.NEXT_PUBLIC_CHAIN_ID, 56),
-  /** $BFATE 合约地址；未配置时付费入口显示「即将开放」。 */
-  token: process.env.NEXT_PUBLIC_BFATE_TOKEN && isAddress(process.env.NEXT_PUBLIC_BFATE_TOKEN) ? getAddress(process.env.NEXT_PUBLIC_BFATE_TOKEN) : null,
+  /** $BFATE 合约地址；无效时付费入口显示「即将开放」。 */
+  token: isAddress(tokenAddr) ? getAddress(tokenAddr) : null,
   tokenDecimals: num(process.env.NEXT_PUBLIC_BFATE_DECIMALS, 18),
   tokenSymbol: process.env.NEXT_PUBLIC_BFATE_SYMBOL || "BFATE",
   /** 每次解读的价格（整数枚）。 */

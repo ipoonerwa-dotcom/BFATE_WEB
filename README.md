@@ -53,7 +53,11 @@ npx tsx scripts/demo-readings.mts http://127.0.0.1:3000   # 生成示例签与�
 5. 可选：`ANTHROPIC_API_KEY` 开启「先生细说」AI 解读（默认模型 `claude-opus-5-5`，可用 `ANTHROPIC_MODEL` 更换；开启了 Anthropic 服务端拒答兜底）。解读在出签后异步生成，每份只生成一次；未配置时页面只显示规则文案。
 6. **Settings → Domains** 绑定域名。
 
-### 代币合约出来以后
+### 代币合约
+
+主网合约 `0xce628b25d817fa0dbf0e3321d1574ebee2957777`（2026-10-09 发射）已写进代码默认值，付费通道已开放。以下是换合约 / 改收款方的方法：
+
+#### 换合约或改收款方
 
 不用改代码：在 Vercel 环境变量里加 `NEXT_PUBLIC_BFATE_TOKEN=合约地址`（精度不是 18 的再加 `NEXT_PUBLIC_BFATE_DECIMALS`；付款不打黑洞而是进项目钱包的，加 `NEXT_PUBLIC_PAY_TO`），然后 **Redeploy**。
 `NEXT_PUBLIC_` 开头的变量是构建时写进页面的，**必须重新部署**才会生效；生效后付费入口自动从「即将开放」变成可付款。
