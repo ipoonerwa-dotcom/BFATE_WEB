@@ -242,6 +242,19 @@ body::before {
 .btn-ink:hover {
   background: rgba(27, 23, 20, 0.05);
 }
+.btn-seal,
+.btn-ink {
+  white-space: nowrap;
+}
+/* 360 宽的小屏安卓机：收窄内边距和字距，「求今日签」不折行 */
+@media (max-width: 400px) {
+  .btn-seal,
+  .btn-ink {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    letter-spacing: 0.1em;
+  }
+}
 
 /* ── 表单 ─────────────────────────────────────────── */
 .field {

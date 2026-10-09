@@ -1,4 +1,5 @@
 import { Seal } from "@/components/ink/Seal";
+import { XLink } from "@/components/site/XLink";
 import { publicConfig } from "@/lib/config";
 
 export function SiteFooter() {
@@ -10,6 +11,7 @@ export function SiteFooter() {
           <div>
             <div className="text-[15px] font-semibold tracking-[0.24em] text-ink-2">BFATE</div>
             <div className="tracking-[0.2em]">今日运势 · 姻缘合盘</div>
+            <XLink className="mt-1 text-[13px]" />
           </div>
         </div>
         <div className="max-w-xl space-y-1 md:text-right">

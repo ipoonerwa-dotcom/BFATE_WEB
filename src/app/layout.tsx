@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: `${publicConfig.siteName} · 今日运势与姻缘合盘`,
   description: `求一支今日签，看十二时辰运势K线；两人生辰合盘，测姻缘。Binance Web3 钱包每日免费，其他钱包每次 ${publicConfig.price} $${publicConfig.tokenSymbol}。`,
   icons: { icon: "/seal.svg" },
+  twitter: { card: "summary", site: publicConfig.xHandle, creator: publicConfig.xHandle },
 };
 
 export const viewport: Viewport = {

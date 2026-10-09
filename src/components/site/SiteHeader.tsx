@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Seal } from "@/components/ink/Seal";
+import { XLink } from "@/components/site/XLink";
 import { WalletChip } from "@/components/wallet/WalletChip";
 
 const NAV = [
@@ -78,7 +79,8 @@ export function SiteHeader() {
               );
             })}
           </nav>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <XLink icon />
             <WalletChip />
           </div>
         </div>

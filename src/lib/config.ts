@@ -6,6 +6,8 @@ const addr = (v: string | undefined, d: `0x${string}`): `0x${string}` => (v && i
 
 export const DEAD = "0x000000000000000000000000000000000000dEaD" as const;
 
+const xUrl = process.env.NEXT_PUBLIC_X_URL || "https://x.com/BinanceFATE";
+
 export const publicConfig = {
   siteName: process.env.NEXT_PUBLIC_SITE_NAME || "BFATE",
   chainId: num(process.env.NEXT_PUBLIC_CHAIN_ID, 56),
@@ -22,6 +24,9 @@ export const publicConfig = {
   freeDailyOther: num(process.env.NEXT_PUBLIC_FREE_DAILY_OTHER, 0),
   /** 换日所用时区。 */
   timeZone: process.env.NEXT_PUBLIC_TIME_ZONE || "Asia/Shanghai",
+  /** 官方 X（Twitter）账号。 */
+  xUrl,
+  xHandle: `@${xUrl.replace(/\/+$/, "").split("/").pop()}`,
 };
 
 export type PublicConfig = typeof publicConfig;
